@@ -1,0 +1,162 @@
+/* 
+  Copyright 2025 PoliTo
+  Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+  SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+  Author: Tommaso Terzano <tommaso.terzano@polito.it> 
+                          <tommaso.terzano@gmail.com>
+ 
+  Info: This HJSON configuration file contains all the necessary information about the verification of the RTL project
+        under test.
+ */
+
+{
+  projectRoot: "/path/to/rtl/project"
+
+  gitRepo: {
+    enable: true # Set to false if you have already integrated VerifIt into your project
+                 # When true, it overrides the "projectRoot" field with the git repository path
+    url: "https://github.com/yourgitrepo"
+    rev: "master" # Or any other branch/tag/commit
+  }
+
+  tests: [
+    {
+      name: "test1"
+      directory: "/path/to/dir1"
+      # The number of input and output datasets must be coherent with the function used to compute the golden result
+      numberInputDatasets: 1
+      numberOutputDatasets: 1
+
+      inputDatasets: {
+        name: "input1"
+        dataType: "int"
+        valueRange: [-50, 50]
+        dimensions: [15] # Example of a fixed-size 1D array
+      }
+
+      outputDatasets: {
+        name: "output1"
+        parameters: [
+          {
+            name: "dataType" # The name of the parameter must be coherent with what the golden result function expects
+                             # It could be anything, e.g. an indication on the order of a FIR filter
+            value: "int"
+          }
+        ]
+        # The size of the output dataset is automatically computed by the golden result function
+      }
+
+      goldenResultFunctions: {
+        name: "exampleFunction" # One of the .py from the "lib" folder
+      }
+    }
+    {
+      name: "test2"
+      directory: "/path/to/dir2"
+      # The number of input and output datasets must be coherent with the function used to compute the golden result
+      numberInputDatasets: 3
+      numberOutputDatasets: 1
+
+      inputDatasets: [
+        { 
+          name: "weights"
+          dataType: "uint8_t"
+          valueRange: [0, 50]
+          dimensions: [15, 15] # Example of a fixed-size 2D array
+        }
+        {
+          name: "biases"
+          dataType: "uint16_t"
+          valueRange: [0, 20]
+          dimensions: [15] # Example of a 1D array
+        }
+        {
+          name: "activations"
+          dataType: "uint32_t"
+          valueRange: [0, 100]
+          dimensions: [15, 15] # Example of a fixed-size 2D array
+        }
+      ]
+
+      outputDatasets: {
+        name: "convResult"
+        parameters: [
+          {
+            name: "dataType"
+            value: "uint32_t"
+          }
+        ]
+      }
+
+      goldenResultFunction: [
+        {
+          name: "convolution" # One of the .py from the "lib" folder
+        }
+      ]
+    }
+    {
+      name: "test3"
+      directory: "/path/to/dir3"
+      
+      numberInputDatasets: 1
+      numberOutputDatasets: 1
+
+      inputDatasets: [
+        { 
+          name: "inputs"
+          dataType: "int"
+          valueRange: [0, 50]
+          parameters: [
+            {
+              name: "length"
+              range: [1, 15]
+            }
+            {
+              name: "width"
+              range: [1, 5]
+            }
+          ]
+          dimensions: "parameters.length, parameters.width" # Example of a dynamic-size 2D array
+        }
+      ]
+
+      outputDatasets: {
+        name: "result"
+        parameters: [
+          {
+            name: "dataType"
+            value: "int"
+          }
+        ]
+      }
+
+      goldenResultFunction: [
+        {
+          name: "exampleFunction" # One of the .py from the "lib" folder
+        }
+      ]
+    }
+  ]
+
+  target:
+  {
+    targetName: "fpga" # or "simulation_tool_name", must be one of the targets defined in "verifit.mk"
+    outputFormat: "r'(\d+):(\d+):(\d+)'" # Regular expression that defines the format of the output of the target
+                                         # e.g. (testId:executionTime:testOutcome)
+                                         # IMPORTANT: This format has to be consistent with the serial output 
+                                         #            software application.
+  }
+  
+  gui: {
+    enable: true
+  }
+
+  report: {
+    includeExecutionTimeStats: true
+    includeResults: true
+    includeStatisticalAnalysis: true
+    includeFailedTestsDescription: true
+    includePerformanceAnalysis: true
+  }
+}
