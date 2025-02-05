@@ -7,8 +7,6 @@
 #  
 # Info: Makefile library of VerifIt. Here you MUST define the commands needed to build the RTL model, 
 #			  compile SW applications, run a simulation and flash the FPGA board.
-#       This file is included in the main makefile of the project, which will use the commands
-#       defined here to test and verify the RTL project under test.
 
 #__________________________________________________________________________________________________#
 #																			            																								 #
@@ -17,7 +15,7 @@
 # If existing, include here a makefile library with the commands needed to build the
 # RTL, compile the SW, run a simulation or flash the FPGA board.
 
-# include(your/project/dependencies)
+# include (your/project/dependencies)
 
 #__________________________________________________________________________________________________#
 #																			            																								 #

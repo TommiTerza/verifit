@@ -11,16 +11,14 @@
  */
 
 {
-  projectRoot: "/path/to/rtl/project"
-
-  gitRepo: {
+  standalone: {
     enable: true # Set to false if you have already integrated VerifIt into your project
                  # When true, it overrides the "projectRoot" field with the git repository path
     url: "https://github.com/yourgitrepo"
     rev: "master" # Or any other branch/tag/commit
   }
 
-  tests: [
+  test: [
     {
       name: "test1"
       directory: "/path/to/dir1"
@@ -28,14 +26,14 @@
       numberInputDatasets: 1
       numberOutputDatasets: 1
 
-      inputDatasets: {
+      inputDataset: {
         name: "input1"
         dataType: "int"
         valueRange: [-50, 50]
         dimensions: [15] # Example of a fixed-size 1D array
       }
 
-      outputDatasets: {
+      outputDataset: {
         name: "output1"
         parameters: [
           {
@@ -47,7 +45,7 @@
         # The size of the output dataset is automatically computed by the golden result function
       }
 
-      goldenResultFunctions: {
+      goldenResultFunction: {
         name: "exampleFunction" # One of the .py from the "lib" folder
       }
     }
@@ -58,7 +56,7 @@
       numberInputDatasets: 3
       numberOutputDatasets: 1
 
-      inputDatasets: [
+      inputDataset: [
         { 
           name: "weights"
           dataType: "uint8_t"
@@ -79,7 +77,7 @@
         }
       ]
 
-      outputDatasets: {
+      outputDataset: {
         name: "convResult"
         parameters: [
           {
@@ -102,7 +100,7 @@
       numberInputDatasets: 1
       numberOutputDatasets: 1
 
-      inputDatasets: [
+      inputDataset: [
         { 
           name: "inputs"
           dataType: "int"
@@ -121,7 +119,7 @@
         }
       ]
 
-      outputDatasets: {
+      outputDataset: {
         name: "result"
         parameters: [
           {
@@ -141,11 +139,14 @@
 
   target:
   {
-    targetName: "fpga" # or "simulation_tool_name", must be one of the targets defined in "verifit.mk"
-    outputFormat: "r'(\d+):(\d+):(\d+)'" # Regular expression that defines the format of the output of the target
+    name: "fpga_board_name" # or "simulation_tool_name", must be one of the targets defined in "verifit.mk"
+    type: "fpga" # or "sim", MANDATORY
+    outputFormat: "r\"(\\d+):(\\d+):(\\d+)\"" # Regular expression that defines the format of the output of the target
                                          # e.g. (testId:executionTime:testOutcome)
                                          # IMPORTANT: This format has to be consistent with the serial output 
                                          #            software application.
+    usbPort: "None" # Leave to none for simulation targets
+    baudrate: "9600" # Set to 0 for simulation targets
   }
   
   gui: {
